@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Windows.Automation;
 
 namespace KimCGLib
 {
@@ -41,6 +42,15 @@ namespace KimCGLib
             }
 
             return handle;
+        }
+
+        public AutomationElement SetMainWindow()
+        {
+        }
+
+        public void ObjectControl(string pID)
+        {
+            AutomationElement automationElement = SetMainWindow();
         }
     }
 }
