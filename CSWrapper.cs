@@ -44,13 +44,42 @@ namespace KimCGLib
             return handle;
         }
 
-        public AutomationElement SetMainWindow()
+        // AutomationElement를 위한 윈도우 핸들 얻기...2024.07.10
+        public AutomationElement GetAutomationElement(string pProcessName)
         {
+            AutomationElement automationElement = null;
+            
+            IntPtr handle = GetWindowHandle(pProcessName);
+            if(handle != null && handle != IntPtr.Zero)
+            {
+                automationElement = AutomationElement.FromHandle(handle);
+            }
+                
+            return automationElement;    
         }
 
-        public void ObjectControl(string pID)
+        // 외부 프로그램의 버튼 클릭 처리하기...2024.07.10
+        public bool ExternalButtonClickById(string pObjectID) // using spy++
         {
-            AutomationElement automationElement = SetMainWindow();
+            bool isSuccess = true;
+            AutomationElement automationElement = SetMainWindow("---");
+            PropertyCondition propCondition = new PropertyCondition(AutomationElement.AutomationProperty, pObjectID);
+            //PropertyCondition propCondition = new PropertyCondition(AutomationElement.NameProperty, pObjectName);
+            AutomationElement aeObject = automationElement.FindFirst(TreeScope.Decendants, propCondition);
+            if(aeObject != null)
+            {
+                try
+                {
+                    InvokePattern invPattern = aeObject.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+                    invPattern?.Invoke();
+                }
+                catch
+                {
+                    isSuccess = false;
+                }
+            }
+
+            return isSuccess;
         }
     }
 }
