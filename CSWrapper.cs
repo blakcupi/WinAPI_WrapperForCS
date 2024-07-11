@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Windows.Automation;
+using System.Windows.Automation; // UIAutomationClient.dll 참조추가 후 사용가능
 
 namespace KimCGLib
 {
@@ -64,7 +64,29 @@ namespace KimCGLib
             bool isSuccess = true;
             AutomationElement automationElement = SetMainWindow("---");
             PropertyCondition propCondition = new PropertyCondition(AutomationElement.AutomationProperty, pObjectID);
-            //PropertyCondition propCondition = new PropertyCondition(AutomationElement.NameProperty, pObjectName);
+            AutomationElement aeObject = automationElement.FindFirst(TreeScope.Decendants, propCondition);
+            if(aeObject != null)
+            {
+                try
+                {
+                    InvokePattern invPattern = aeObject.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+                    invPattern?.Invoke();
+                }
+                catch
+                {
+                    isSuccess = false;
+                }
+            }
+
+            return isSuccess;
+        }
+
+        // 외부 프로그램의 버튼 클릭 처리하기...2024.07.11
+        public bool ExternalButtonClickByName(string pObjectName)
+        {
+            bool isSuccess = true;
+            AutomationElement automationElement = SetMainWindow("---");
+            PropertyCondition propCondition = new PropertyCondition(AutomationElement.NameProperty, pObjectName);
             AutomationElement aeObject = automationElement.FindFirst(TreeScope.Decendants, propCondition);
             if(aeObject != null)
             {
